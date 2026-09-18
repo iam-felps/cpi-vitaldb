@@ -1,0 +1,6 @@
+step,n_remaining
+Total cases in VitalDB,6388
+Exclude non-general-anesthesia,6043
+Exclude liver transplant / donor hepatectomy,5865
+Exclude recording length < 45 min,5825
+Exclude insufficient core track availability,3213
