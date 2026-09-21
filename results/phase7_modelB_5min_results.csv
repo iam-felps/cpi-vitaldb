@@ -1,0 +1,6 @@
+fold,auroc,auprc,best_params,n_train,n_test
+0,0.7408179886385479,0.08173507267224868,"{'learning_rate': 0.05, 'num_leaves': 31, 'n_estimators': 100}",470412,117593
+1,0.7622942629547517,0.07954285423583557,"{'learning_rate': 0.05, 'num_leaves': 31, 'n_estimators': 100}",470398,117607
+2,0.7553118170256241,0.08591951014602056,"{'learning_rate': 0.05, 'num_leaves': 31, 'n_estimators': 100}",470399,117606
+3,0.7634276858612494,0.08674135272647343,"{'learning_rate': 0.05, 'num_leaves': 31, 'n_estimators': 100}",470412,117593
+4,0.7550796183458421,0.07872433087920931,"{'learning_rate': 0.05, 'num_leaves': 31, 'n_estimators': 100}",470399,117606
