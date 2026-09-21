@@ -1,28 +1,23 @@
 import pandas as pd
 import os
 
-cohort_ids = pd.read_csv('results/phase3_final_cohort_caseids.csv')['caseid'].tolist()[:20]
+RESULTS_DIR = 'results'
+INTERIM_DIR = os.path.join('data', 'interim')
 
-total_high_bis_time = 0
-total_sqi_flagged_time = 0
+recheck = pd.read_csv(os.path.join(RESULTS_DIR, 'phase3_track_recheck.csv'))
+verified_valid = set(recheck[recheck['has_all_core_tracks'] == True]['caseid'])
+old_cohort = set(pd.read_csv(os.path.join(RESULTS_DIR, 'phase3_final_cohort_caseids.csv'))['caseid'].tolist())
+# Note: phase3_final_cohort_caseids.csv was just overwritten above — re-derive dropped set separately
+old_cohort_original = set(pd.read_csv(os.path.join(RESULTS_DIR, 'phase3_step4_caseids.csv'))['caseid'].tolist())
 
-for cid in cohort_ids:
-    wide = pd.read_parquet(f'data/interim/{cid}.parquet')
-    df_raw = pd.read_parquet(f'data/raw/{cid}.parquet')
+# Actually, simplest: just remove interim files for any case NOT in the corrected cohort
+removed = 0
+for f in os.listdir(INTERIM_DIR):
+    if f.endswith('.parquet'):
+        cid = int(f.replace('.parquet', ''))
+        if cid not in verified_valid:
+            os.remove(os.path.join(INTERIM_DIR, f))
+            removed += 1
 
-    # We need SQI aligned to the same 1s grid as BIS_emg_unfiltered
-    sqi_raw = df_raw[df_raw['tname'] == 'SQI'].set_index('dt')['nval']
-    t0 = sqi_raw.index.min() if len(sqi_raw) > 0 else None
-    if t0 is None:
-        continue
-    sqi_raw.index = pd.to_timedelta(sqi_raw.index - t0, unit='s')
-    sqi_raw = sqi_raw.resample('1s').mean()
-    sqi_aligned = sqi_raw.reindex(wide.index)
-
-    high_bis_mask = wide['BIS_emg_unfiltered'] >= 60
-    total_high_bis_time += high_bis_mask.sum()
-    sqi_low_during_high_bis = (high_bis_mask & (sqi_aligned < 50)).sum()
-    total_sqi_flagged_time += sqi_low_during_high_bis
-
-print(f"Total BIS>=60 seconds (unfiltered): {total_high_bis_time}")
-print(f"Seconds where SQI<50 during BIS>=60: {total_sqi_flagged_time} ({total_sqi_flagged_time/total_high_bis_time*100:.1f}%)")
+print(f"Removed {removed} stale interim files")
+print(f"Remaining interim files should now be <= {len(verified_valid)}")
