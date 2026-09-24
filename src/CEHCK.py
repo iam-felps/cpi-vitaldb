@@ -1,26 +1,16 @@
+import vitaldb
+
+for cid in [1, 4, 7]:
+    vf = vitaldb.VitalFile(cid, ['EVENT'])
+    df = vf.to_pandas(['EVENT'], interval=1, return_timestamp=True)
+    print(f"\n=== Case {cid} EVENT track ===")
+    print(f"Shape: {df.shape}")
+    non_null = df[df['EVENT'].notna()]
+    print(f"Non-null entries: {len(non_null)}")
+    if len(non_null) > 0:
+        print(non_null.head(30))
+
 import pandas as pd
-import numpy as np
-import os
-
-INTERIM_DIR = 'data/interim'
-WINDOW_S = 300
-STRIDE_S = 60
-
-cohort_ids = pd.read_csv('results/phase4_final_cohort_caseids.csv')['caseid'].tolist()[:200]  # sample for speed
-
-completeness_records = []
-for cid in cohort_ids:
-    path = os.path.join(INTERIM_DIR, f"{cid}.parquet")
-    wide = pd.read_parquet(path)
-    n = len(wide)
-    for end in range(WINDOW_S, n, STRIDE_S):
-        for track in ['HR', 'ART_MBP', 'PLETH_SPO2', 'ETCO2']:
-            window = wide[track].iloc[end-WINDOW_S:end]
-            completeness = window.notna().sum() / WINDOW_S
-            completeness_records.append(completeness)
-
-comp = pd.Series(completeness_records)
-print(f"Total window-track observations: {len(comp)}")
-print(f"Below 50% (already excluded/NaN'd currently): {(comp < 0.5).mean()*100:.2f}%")
-print(f"Between 50-70% (currently KEPT, would be EXCLUDED at 70% threshold): {((comp >= 0.5) & (comp < 0.7)).mean()*100:.2f}%")
-print(f"70%+ (kept under either rule): {(comp >= 0.7).mean()*100:.2f}%")
+df = pd.read_csv("https://api.vitaldb.net/cases")
+print(df[['caseid', 'intraop_eph', 'intraop_phe', 'intraop_epi']].describe())
+print(df[['intraop_eph', 'intraop_phe', 'intraop_epi']].head(10))
