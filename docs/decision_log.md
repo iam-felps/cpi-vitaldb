@@ -115,3 +115,56 @@ Results, all 6 model/horizon combinations (24 comparisons total): SQI-primary si
 These plots, together with the Phase 10b elapsed_time_s investigation (entry 39), form the core interpretability results for Results/Discussion.
 
 41. **Hypothesis Test 5 (LOCF threshold sensitivity) resolved via empirical impact check, not full rebuild.** Following the same diagnostic-first approach as the window-missingness question (entry 34), checked the actual gap-length distribution before committing to a multi-hour pipeline rebuild (LOCF threshold changes cascade through interim data, event detection, Phase 5 feature engineering, relabeling, and refitting). On a 200-case sample, raw pre-LOCF gap-length distribution across HR/MAP/SpO2/ETCO2: 99.96% of gaps are <=10s (filled identically under 10s, 15s, and 30s thresholds); only 0.01% fall in the 10-15s band (would differ between 10s vs. 15s/30s) and 0.01% in the 15-30s band (would differ only at 30s); 0.02% exceed 30s (unfilled under any candidate threshold). Given this negligible overlap, the LOCF threshold choice (10s vs. 15s vs. 30s) has no practically meaningful effect on the dataset, and the primary 15s threshold is retained without a full sensitivity re-run. This finding - not an assumption - is reported transparently in Methods as the basis for treating Hypothesis Test 5 as resolved by direct data characterization rather than a full pipeline rebuild.
+
+### Entry 42 — 2026-09-24 — Matched-sampling secondary design (protocol Section 5.4)
+
+**Rationale:** The primary design draws negatives from all valid windows, which
+mixes in windows only minutes away from the next BIS>=60 event alongside
+windows far from any event. This secondary design builds a matched negative
+set to check whether primary-design performance depends on "easy" negatives.
+
+**Method:** Per case, up to 2 negative windows selected via farthest-point
+sampling: >=20 min (1200s) from the start AND end of every event in that
+case, and the two picks maximally separated from each other (>=10 min apart)
+rather than just both far from the event -- an early version of the selection
+function clustered both picks near the same end of the case when the event
+sat closer to one side; caught and fixed via a synthetic-data unit test
+before running on real data (4 synthetic cases: mid-case event, no events,
+case too short for any valid window, two events -- all passed after the fix).
+Matched negatives: 5,296 rows across 2,656/2,665 cases. Positives reused
+unchanged from the primary design per horizon (14,443 / 26,938 / 38,479 for
+5/10/15min). All 6 model/horizon combinations refit with GroupKFold(5) +
+IterativeImputer + RobustScaler + SMOTE + LightGBM, reusing each combo's
+most-frequent best_params from Phase 7 (no re-tuning, given the much smaller
+matched dataset).
+
+**Results (mean AUROC across 5 folds):**
+| Model  | Horizon | Primary AUROC | Matched AUROC |
+|--------|---------|---------------|----------------|
+| ModelA | 5min    | 0.8249        | 0.8819         |
+| ModelA | 10min   | 0.8036        | 0.8514         |
+| ModelA | 15min   | 0.7883        | 0.8384         |
+| ModelB | 5min    | 0.7507        | 0.8616         |
+| ModelB | 10min   | 0.7370        | 0.8377         |
+| ModelB | 15min   | 0.7329        | 0.8264         |
+
+Class-separation diagnostic (mean pos-neg difference): HR_mean -0.84 to
+-1.07, ART_MBP_mean +1.30 to +3.16, HR_var -11.7 to -16.0, ART_MBP_slope
++0.005 to +0.014 across horizons -- consistent direction and magnitude
+across all three horizons.
+
+**Interpretation:** AUROC improves on the matched set for every combination,
+in the expected direction -- removing near-event "hard" negatives makes the
+classes more separable, without any sign that primary-design performance was
+an artifact of a trivially easy negative pool. No leakage violations across
+any fold/combination (verified: no caseid overlap; single-level CV here
+since no inner tuning was re-run).
+
+**Note:** positive:negative ratio is inverted relative to the primary design
+(positives are the majority in the matched set, ~2.7:1 to 7.3:1 depending on
+horizon) -- this follows directly from reusing all primary positives against
+a capped ~2-per-case negative set, per protocol Section 5.4, not a new
+design choice.
+
+Outputs: esults/phase9_matched_class_separation.csv,
+esults/phase9_matched_sampling_results.csv.
