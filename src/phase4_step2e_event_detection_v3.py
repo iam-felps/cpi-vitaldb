@@ -12,6 +12,7 @@ MIN_EVENT_DURATION_S = 180
 # All four variants — 'BIS' is primary (SQI-filtered)
 VARIANTS = {
     'sqi_primary': 'BIS',
+    'sqi15': 'BIS_sqi15_filtered',
     'emg40': 'BIS_emg40_filtered',
     'emg35': 'BIS_emg35_filtered',
     'unfiltered': 'BIS_unfiltered',
