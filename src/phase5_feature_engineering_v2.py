@@ -18,16 +18,21 @@ Changes from v1 (decision log entry 44):
   5. Clinical variables merged here from a LOCAL snapshot of the VitalDB clinical table
      (created once, then always read from disk). ASA coded 6 is set to missing
      (entry 13 data-quality caveat).
-  6. DFA/sample entropy reuse: interim HR is unaffected by the entry-43 fix, so v1
-     values are reused for (caseid, t) rows already computed, after a spot check that
-     recomputes 3 cached cases and requires identical values. Only cases new to the
-     cohort are computed from scratch. Known, documented property kept for
-     comparability: NaNs are dropped before DFA/SampEn (entry 44).
+  6. DFA uses ordinary least-squares fitting (nolds fit_exp='poly'; Peng et al. 1995)
+     for BOTH exponents, recomputed for every case. v1 used nolds' default RANSAC fit,
+     which is randomised: alpha2 differed between two runs on identical data in ~0.5%
+     of windows (diag_dfa_mismatch.py). Sample entropy is deterministic and is reused
+     from v1 for existing cases (spot check requires exact equality); only cases new
+     to the cohort compute it from scratch. Documented property kept: NaNs are dropped
+     before DFA/SampEn.
+  7. DFA validity rule (apply_dfa_validity, entry 45): an exponent is set to missing
+     when it is undefined — alpha < 0 (fluctuation decreasing with scale), or HR has
+     zero variance in the window. Valid DFA-1 exponents lie in ~[0, 2].
 
 Safety checks (script stops before writing if they fail):
   - case-time mapping: raw dt - VITALDB_EPOCH must reproduce the clinical caseend
     (median |difference| <= 60 s across the cohort).
-  - DFA cache spot check (identical values).
+  - sample-entropy cache spot check (exactly identical values).
 Output: data/processed/phase5_features_v2.parquet (v1 table is left untouched).
 """
 
@@ -51,6 +56,8 @@ STEP1_TRACKS = ['HR', 'ART_MBP', 'PLETH_SPO2', 'ETCO2', 'BIS', 'EMG', 'PPF20_CE'
 DFA_ALPHA1_NVALS = np.unique(np.logspace(np.log10(4), np.log10(16), 8).astype(int))
 DFA_ALPHA2_NVALS = np.unique(np.logspace(np.log10(16), np.log10(64), 8).astype(int))
 NONLIN = ['HR_dfa_alpha1', 'HR_dfa_alpha2', 'HR_sampen']
+DFA_COLS = ['HR_dfa_alpha1', 'HR_dfa_alpha2']
+DFA_FIT = 'poly'   # deterministic OLS; nolds default 'RANSAC' is randomised
 MAX_CASE_TIME_MISMATCH_S = 60
 _X = np.arange(WINDOW_S)
 
@@ -102,7 +109,7 @@ def ce_mean(arr, ends):
     return out
 
 
-def nonlinear_hr(arr, ends):
+def nonlinear_hr(arr, ends, do_sampen=True):
     a1, a2, se = (np.full(len(ends), np.nan) for _ in range(3))
     for j, end in enumerate(ends):
         valid = arr[end - WINDOW_S:end]
@@ -110,13 +117,15 @@ def nonlinear_hr(arr, ends):
         if len(valid) < WINDOW_S * FEATURE_MIN_WINDOW_FRAC:
             continue
         try:
-            a1[j] = nolds.dfa(valid, nvals=DFA_ALPHA1_NVALS, order=1)
+            a1[j] = nolds.dfa(valid, nvals=DFA_ALPHA1_NVALS, order=1, fit_exp=DFA_FIT)
         except Exception:
             pass
         try:
-            a2[j] = nolds.dfa(valid, nvals=DFA_ALPHA2_NVALS, order=1)
+            a2[j] = nolds.dfa(valid, nvals=DFA_ALPHA2_NVALS, order=1, fit_exp=DFA_FIT)
         except Exception:
             pass
+        if not do_sampen:
+            continue
         try:
             sd = np.std(valid)
             if sd > 0:
@@ -126,8 +135,22 @@ def nonlinear_hr(arr, ends):
     return a1, a2, se
 
 
+def apply_dfa_validity(table):
+    """Set undefined DFA exponents to NaN. Returns per-column counts of values removed."""
+    flat = table['HR_var'] <= 1e-12
+    removed = {}
+    for c in DFA_COLS:
+        neg = table[c] < 0
+        bad = (neg | flat) & table[c].notna()
+        removed[c] = {'negative': int((neg & table[c].notna()).sum()),
+                      'zero_HR_variance': int((flat & table[c].notna() & ~neg).sum()),
+                      'total': int(bad.sum())}
+        table.loc[bad, c] = np.nan
+    return removed
+
+
 def build_case(args):
-    cid, need_nonlinear = args
+    cid, need_sampen = args
     try:
         wide = pd.read_parquet(os.path.join(INTERIM_DIR, f"{cid}.parquet"))
     except Exception as e:
@@ -141,9 +164,8 @@ def build_case(args):
         st = rolling_stats(wide[track].values.astype(float), ends)
         for k, v in st.items():
             feat[f'{track}_{k}'] = v
-    if need_nonlinear:
-        a1, a2, se = nonlinear_hr(wide['HR'].values.astype(float), ends)
-        feat['HR_dfa_alpha1'], feat['HR_dfa_alpha2'], feat['HR_sampen'] = a1, a2, se
+    a1, a2, se = nonlinear_hr(wide['HR'].values.astype(float), ends, do_sampen=need_sampen)
+    feat['HR_dfa_alpha1'], feat['HR_dfa_alpha2'], feat['HR_sampen'] = a1, a2, se
     ppf = wide['PPF20_CE'].values.astype(float) if 'PPF20_CE' in wide else np.full(n, np.nan)
     rft = wide['RFTN20_CE'].values.astype(float) if 'RFTN20_CE' in wide else np.full(n, np.nan)
     has_ppf, has_rft = bool(np.isfinite(ppf).any()), bool(np.isfinite(rft).any())
@@ -187,7 +209,8 @@ if __name__ == '__main__':
         cached_cases = set()
     jobs = [(cid, cid not in cached_cases) for cid in cohort]
     n_new = sum(need for _, need in jobs)
-    print(f"Nonlinear HR features: reusing v1 values for {len(cohort) - n_new} cases, computing {n_new} new")
+    print(f"DFA (poly fit): computing for all {len(cohort)} cases. "
+          f"Sample entropy: reusing v1 for {len(cohort) - n_new} cases, computing {n_new} new")
 
     # ---- Check 2: cache spot check ----
     if cache is not None and len(cached_cases & set(cohort)) > 0:
@@ -196,13 +219,13 @@ if __name__ == '__main__':
         ok = True
         for cid in spot:
             fresh, _ = build_case((cid, True))
-            old = cache[cache['caseid'] == cid].set_index('t')[NONLIN]
-            new = fresh.set_index('t')[NONLIN].reindex(old.index)
-            same = np.allclose(old.values, new.values, equal_nan=True)
-            print(f"  cache spot check case {cid}: {'identical' if same else 'MISMATCH'}")
+            old = cache[cache['caseid'] == cid].set_index('t')['HR_sampen']
+            new = fresh.set_index('t')['HR_sampen'].reindex(old.index)
+            same = np.allclose(old.values, new.values, rtol=0, atol=1e-12, equal_nan=True)
+            print(f"  sample-entropy cache spot check case {cid}: {'identical' if same else 'MISMATCH'}")
             ok &= same
         if not ok:
-            print("STOP: cached DFA/SampEn values differ from recomputation. Nothing written.")
+            print("STOP: cached sample entropy differs from recomputation. Nothing written.")
             sys.exit(1)
 
     # ---- Build ----
@@ -219,13 +242,19 @@ if __name__ == '__main__':
                 print(f"[{i+1}/{len(jobs)}] elapsed={time.time()-start:.0f}s")
     table = pd.concat(parts, ignore_index=True)
 
+    dfa_change = {}
     if cache is not None:
         cached_rows = table.loc[table['caseid'].isin(cached_cases), ['caseid', 't']]
         merged = cached_rows.merge(cache, on=['caseid', 't'], how='left')
-        for c in NONLIN:
-            if c not in table:
-                table[c] = np.nan
-            table.loc[cached_rows.index, c] = merged[c].values
+        table.loc[cached_rows.index, 'HR_sampen'] = merged['HR_sampen'].values
+        for c in DFA_COLS:   # how much the RANSAC -> OLS switch changed v1 values (for the log)
+            new_v, old_v = table.loc[cached_rows.index, c].to_numpy(), merged[c].to_numpy()
+            both = ~np.isnan(new_v) & ~np.isnan(old_v)
+            d = np.abs(new_v[both] - old_v[both])
+            dfa_change[c] = (int(both.sum()), int((d > 1e-9).sum()), float(d.max()) if len(d) else 0.0,
+                             float(np.percentile(d[d > 1e-9], 50)) if (d > 1e-9).any() else 0.0)
+
+    dfa_removed = apply_dfa_validity(table)
 
     # ---- Times and clinical ----
     table['t_case_s'] = table['caseid'].map(starts) + table['t']
@@ -253,6 +282,13 @@ if __name__ == '__main__':
         print(f"  {tr}: windows >=90% {(f>=0.9).mean()*100:.1f}% | >=70% {(f>=0.7).mean()*100:.1f}% | >=50% {(f>=0.5).mean()*100:.1f}%")
     allcore70 = np.logical_and.reduce([table[f'{t}_frac'] >= 0.7 for t in CORE_TRACKS])
     print(f"Rows passing primary rule (all core tracks >=70% present): {allcore70.sum()} ({allcore70.mean()*100:.1f}%)")
-    print(f"Nonlinear HR non-null: {table['HR_dfa_alpha1'].notna().mean()*100:.1f}%")
+    print(f"Nonlinear HR non-null: alpha1 {table['HR_dfa_alpha1'].notna().mean()*100:.1f}%, "
+          f"alpha2 {table['HR_dfa_alpha2'].notna().mean()*100:.1f}%, sampen {table['HR_sampen'].notna().mean()*100:.1f}%")
+    for c, r in dfa_removed.items():
+        print(f"  DFA validity rule, {c}: {r['total']} set to missing "
+              f"(alpha<0: {r['negative']}, zero HR variance: {r['zero_HR_variance']})")
+    for c, (n, nd, mx, med) in dfa_change.items():
+        print(f"  {c}: v1 RANSAC vs v2 OLS — {nd}/{n} windows changed ({nd/n*100:.2f}%), "
+              f"median change among changed {med:.3f}, max {mx:.3f}")
     if failed:
         print(f"First failures: {failed[:5]}")
