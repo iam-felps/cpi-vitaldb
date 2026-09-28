@@ -1,0 +1,13 @@
+run,model,comparison,a,b,spearman,jaccard_top5,jaccard_top10
+sqi_primary_w70,A,across horizons,5min,10min,0.9209486166007905,0.6666666666666666,0.8181818181818182
+sqi_primary_w70,A,across horizons,5min,15min,0.7638339920948617,0.6666666666666666,0.6666666666666666
+sqi_primary_w70,A,across horizons,10min,15min,0.9011857707509882,1.0,0.6666666666666666
+sqi_primary_w70,A,across folds (mean of pairs),5min,5min,0.9439723320158102,1.0,0.8545454545454547
+sqi_primary_w70,A,across folds (mean of pairs),10min,10min,0.9433794466403163,0.8,0.8545454545454547
+sqi_primary_w70,A,across folds (mean of pairs),15min,15min,0.925098814229249,0.7666666666666667,0.790909090909091
+sqi_primary_w70,B,across horizons,5min,10min,0.943859649122807,1.0,0.8181818181818182
+sqi_primary_w70,B,across horizons,5min,15min,0.863157894736842,0.6666666666666666,0.8181818181818182
+sqi_primary_w70,B,across horizons,10min,15min,0.9578947368421052,0.6666666666666666,0.8181818181818182
+sqi_primary_w70,B,across folds (mean of pairs),5min,5min,0.9545614035087719,1.0,0.7424242424242424
+sqi_primary_w70,B,across folds (mean of pairs),10min,10min,0.9533333333333334,1.0,0.7454545454545455
+sqi_primary_w70,B,across folds (mean of pairs),15min,15min,0.9752631578947369,1.0,0.890909090909091
