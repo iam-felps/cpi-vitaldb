@@ -1,0 +1,26 @@
+=== Phase 7 v2 run 'sqi_primary_w70_only-elapsed_time_s-PPF20_CE_mean-RFTN20_CE_mean-tiva_propofol' | variant=sqi_primary min_window_frac=0.7 fixed_config_from=sqi_primary_w70 drop_features=[] only_features=['elapsed_time_s', 'PPF20_CE_mean', 'RFTN20_CE_mean', 'tiva_propofol'] period=anesthesia ===
+Labeled rows: 569773; passing window rule: 513825 (90.2%)
+
+[A/5min] rows=498941 cases=2671 positives=8603 (1.72%)
+  [A/5min] fold 0: xgboost {'learning_rate': 0.1, 'max_depth': 4} inner=0.8434 outer AUROC=0.8339 AUPRC=0.1324 calib=isotonic (7s)
+  [A/5min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.8315 outer AUROC=0.8590 AUPRC=0.1613 calib=isotonic (7s)
+  [A/5min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.8426 outer AUROC=0.8400 AUPRC=0.1232 calib=isotonic (8s)
+  [A/5min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.8430 outer AUROC=0.8464 AUPRC=0.1346 calib=isotonic (11s)
+  [A/5min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.8422 outer AUROC=0.8405 AUPRC=0.1200 calib=platt (12s)
+[A/5min] done in 0.7 min | pooled AUROC 0.8434 | libraries chosen {'lightgbm': 4, 'xgboost': 1} | leakage checks passed
+
+[A/10min] rows=497959 cases=2671 positives=17243 (3.46%)
+  [A/10min] fold 0: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.8102 outer AUROC=0.8025 AUPRC=0.2028 calib=isotonic (13s)
+  [A/10min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.8067 outer AUROC=0.8276 AUPRC=0.2273 calib=isotonic (11s)
+  [A/10min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.8117 outer AUROC=0.8021 AUPRC=0.1686 calib=isotonic (10s)
+  [A/10min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.8077 outer AUROC=0.8131 AUPRC=0.2071 calib=isotonic (12s)
+  [A/10min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.8096 outer AUROC=0.8079 AUPRC=0.1758 calib=isotonic (11s)
+[A/10min] done in 1.0 min | pooled AUROC 0.8104 | libraries chosen {'lightgbm': 5} | leakage checks passed
+
+[A/15min] rows=493316 cases=2671 positives=23514 (4.77%)
+  [A/15min] fold 0: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7743 outer AUROC=0.7624 AUPRC=0.2112 calib=isotonic (5s)
+  [A/15min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7651 outer AUROC=0.7840 AUPRC=0.2270 calib=isotonic (6s)
+  [A/15min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7756 outer AUROC=0.7607 AUPRC=0.1765 calib=isotonic (10s)
+  [A/15min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7692 outer AUROC=0.7848 AUPRC=0.2266 calib=isotonic (10s)
+  [A/15min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7738 outer AUROC=0.7749 AUPRC=0.1884 calib=isotonic (10s)
+[A/15min] done in 0.7 min | pooled AUROC 0.7729 | libraries chosen {'lightgbm': 5} | leakage checks passed

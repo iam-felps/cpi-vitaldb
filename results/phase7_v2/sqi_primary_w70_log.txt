@@ -98,3 +98,14 @@ Labeled rows: 569773; passing window rule: 513825 (90.2%)
   [A/15min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7953 outer AUROC=0.8060 AUPRC=0.2613 calib=isotonic (159s)
   [A/15min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7936 outer AUROC=0.8019 AUPRC=0.2315 calib=isotonic (177s)
 [A/15min] done in 17.4 min | pooled AUROC 0.7988 | libraries chosen {'lightgbm': 5} | leakage checks passed
+=== Phase 7 v2 run 'sqi_primary_w70' | variant=sqi_primary min_window_frac=0.7 fixed_config_from=None drop_features=[] period=anesthesia ===
+Labeled rows: 569773; passing window rule: 513825 (90.2%)
+[A/5min] already done — skipping
+[A/10min] already done — skipping
+[A/15min] already done — skipping
+[B/5min] already done — skipping
+[B/10min] already done — skipping
+[B/15min] already done — skipping
+[baseline/5min] already done — skipping
+[baseline/10min] already done — skipping
+[baseline/15min] already done — skipping

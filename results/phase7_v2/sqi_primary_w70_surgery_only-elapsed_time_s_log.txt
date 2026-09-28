@@ -1,0 +1,26 @@
+=== Phase 7 v2 run 'sqi_primary_w70_surgery_only-elapsed_time_s' | variant=sqi_primary min_window_frac=0.7 fixed_config_from=sqi_primary_w70 drop_features=[] only_features=['elapsed_time_s'] period=surgery ===
+Labeled rows: 481353; passing window rule: 448097 (93.1%)
+
+[A/5min] rows=425450 cases=2672 positives=3174 (0.75%)
+  [A/5min] fold 0: xgboost {'learning_rate': 0.1, 'max_depth': 4} inner=0.6486 outer AUROC=0.6143 AUPRC=0.0117 calib=platt (4s)
+  [A/5min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.6134 outer AUROC=0.6616 AUPRC=0.0151 calib=isotonic (5s)
+  [A/5min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6394 outer AUROC=0.6413 AUPRC=0.0150 calib=platt (5s)
+  [A/5min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6384 outer AUROC=0.6403 AUPRC=0.0109 calib=isotonic (4s)
+  [A/5min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6280 outer AUROC=0.6732 AUPRC=0.0143 calib=platt (5s)
+[A/5min] done in 0.4 min | pooled AUROC 0.6451 | libraries chosen {'lightgbm': 4, 'xgboost': 1} | leakage checks passed
+
+[A/10min] rows=415700 cases=2672 positives=5018 (1.21%)
+  [A/10min] fold 0: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.6422 outer AUROC=0.5969 AUPRC=0.0171 calib=platt (6s)
+  [A/10min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6181 outer AUROC=0.6815 AUPRC=0.0247 calib=platt (5s)
+  [A/10min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6350 outer AUROC=0.6328 AUPRC=0.0234 calib=isotonic (4s)
+  [A/10min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.6308 outer AUROC=0.6327 AUPRC=0.0177 calib=isotonic (6s)
+  [A/10min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.6214 outer AUROC=0.6790 AUPRC=0.0237 calib=platt (6s)
+[A/10min] done in 0.4 min | pooled AUROC 0.6426 | libraries chosen {'lightgbm': 5} | leakage checks passed
+
+[A/15min] rows=404332 cases=2671 positives=6159 (1.52%)
+  [A/15min] fold 0: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6464 outer AUROC=0.5862 AUPRC=0.0209 calib=isotonic (4s)
+  [A/15min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6000 outer AUROC=0.6732 AUPRC=0.0306 calib=isotonic (4s)
+  [A/15min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6317 outer AUROC=0.6289 AUPRC=0.0295 calib=platt (4s)
+  [A/15min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6364 outer AUROC=0.6215 AUPRC=0.0216 calib=platt (4s)
+  [A/15min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6191 outer AUROC=0.6740 AUPRC=0.0307 calib=platt (4s)
+[A/15min] done in 0.4 min | pooled AUROC 0.6350 | libraries chosen {'lightgbm': 5} | leakage checks passed

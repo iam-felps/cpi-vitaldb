@@ -1,0 +1,74 @@
+=== Phase 7 v2 run 'sqi_primary_w70_surgery' | variant=sqi_primary min_window_frac=0.7 fixed_config_from=sqi_primary_w70 drop_features=[] period=surgery ===
+Labeled rows: 481353; passing window rule: 448097 (93.1%)
+
+[A/5min] rows=425450 cases=2672 positives=3174 (0.75%)
+  [A/5min] fold 0: xgboost {'learning_rate': 0.1, 'max_depth': 4} inner=0.8006 outer AUROC=0.8117 AUPRC=0.0864 calib=platt (20s)
+  [A/5min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.7671 outer AUROC=0.8109 AUPRC=0.0542 calib=platt (15s)
+  [A/5min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7884 outer AUROC=0.7766 AUPRC=0.0512 calib=platt (14s)
+  [A/5min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7904 outer AUROC=0.7876 AUPRC=0.0520 calib=isotonic (13s)
+  [A/5min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7978 outer AUROC=0.8188 AUPRC=0.0481 calib=isotonic (13s)
+[A/5min] done in 1.3 min | pooled AUROC 0.7974 | libraries chosen {'lightgbm': 4, 'xgboost': 1} | leakage checks passed
+
+[A/10min] rows=415700 cases=2672 positives=5018 (1.21%)
+  [A/10min] fold 0: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.7322 outer AUROC=0.7314 AUPRC=0.0612 calib=isotonic (16s)
+  [A/10min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7445 outer AUROC=0.7488 AUPRC=0.0596 calib=isotonic (14s)
+  [A/10min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7544 outer AUROC=0.7312 AUPRC=0.0446 calib=isotonic (14s)
+  [A/10min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.7460 outer AUROC=0.7100 AUPRC=0.0457 calib=isotonic (15s)
+  [A/10min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 31} inner=0.7285 outer AUROC=0.7599 AUPRC=0.0692 calib=isotonic (18s)
+[A/10min] done in 1.3 min | pooled AUROC 0.7358 | libraries chosen {'lightgbm': 5} | leakage checks passed
+
+[A/15min] rows=404332 cases=2671 positives=6159 (1.52%)
+  [A/15min] fold 0: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7106 outer AUROC=0.6779 AUPRC=0.0476 calib=platt (16s)
+  [A/15min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6958 outer AUROC=0.7227 AUPRC=0.0454 calib=platt (17s)
+  [A/15min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.7024 outer AUROC=0.6642 AUPRC=0.0412 calib=isotonic (24s)
+  [A/15min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6995 outer AUROC=0.6950 AUPRC=0.0539 calib=isotonic (23s)
+  [A/15min] fold 4: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6812 outer AUROC=0.7564 AUPRC=0.0556 calib=platt (23s)
+[A/15min] done in 1.7 min | pooled AUROC 0.7013 | libraries chosen {'lightgbm': 5} | leakage checks passed
+
+[B/5min] rows=425450 cases=2672 positives=3174 (0.75%)
+  [B/5min] fold 0: xgboost {'learning_rate': 0.05, 'max_depth': 4} inner=0.7123 outer AUROC=0.7107 AUPRC=0.0220 calib=isotonic (20s)
+  [B/5min] fold 1: xgboost {'learning_rate': 0.05, 'max_depth': 4} inner=0.7012 outer AUROC=0.7193 AUPRC=0.0233 calib=platt (19s)
+  [B/5min] fold 2: catboost {'learning_rate': 0.05, 'depth': 6} inner=0.6923 outer AUROC=0.6868 AUPRC=0.0245 calib=platt (29s)
+  [B/5min] fold 3: catboost {'learning_rate': 0.1, 'depth': 4} inner=0.6974 outer AUROC=0.7355 AUPRC=0.0266 calib=isotonic (31s)
+  [B/5min] fold 4: xgboost {'learning_rate': 0.05, 'max_depth': 4} inner=0.7107 outer AUROC=0.7225 AUPRC=0.0216 calib=platt (21s)
+[B/5min] done in 2.0 min | pooled AUROC 0.7129 | libraries chosen {'xgboost': 3, 'catboost': 2} | leakage checks passed
+
+[B/10min] rows=415700 cases=2672 positives=5018 (1.21%)
+  [B/10min] fold 0: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6807 outer AUROC=0.6577 AUPRC=0.0218 calib=platt (17s)
+  [B/10min] fold 1: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6735 outer AUROC=0.6742 AUPRC=0.0256 calib=platt (15s)
+  [B/10min] fold 2: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6738 outer AUROC=0.6603 AUPRC=0.0300 calib=platt (17s)
+  [B/10min] fold 3: lightgbm {'learning_rate': 0.05, 'num_leaves': 15} inner=0.6678 outer AUROC=0.6963 AUPRC=0.0262 calib=platt (15s)
+  [B/10min] fold 4: catboost {'learning_rate': 0.05, 'depth': 6} inner=0.6741 outer AUROC=0.7172 AUPRC=0.0349 calib=platt (36s)
+[B/10min] done in 1.7 min | pooled AUROC 0.6786 | libraries chosen {'lightgbm': 4, 'catboost': 1} | leakage checks passed
+
+[B/15min] rows=404332 cases=2671 positives=6159 (1.52%)
+  [B/15min] fold 0: catboost {'learning_rate': 0.05, 'depth': 6} inner=0.6754 outer AUROC=0.6353 AUPRC=0.0299 calib=platt (35s)
+  [B/15min] fold 1: catboost {'learning_rate': 0.05, 'depth': 6} inner=0.6466 outer AUROC=0.6683 AUPRC=0.0309 calib=platt (36s)
+  [B/15min] fold 2: catboost {'learning_rate': 0.05, 'depth': 6} inner=0.6579 outer AUROC=0.6444 AUPRC=0.0369 calib=platt (39s)
+  [B/15min] fold 3: xgboost {'learning_rate': 0.05, 'max_depth': 4} inner=0.6497 outer AUROC=0.6802 AUPRC=0.0323 calib=platt (16s)
+  [B/15min] fold 4: catboost {'learning_rate': 0.05, 'depth': 4} inner=0.6551 outer AUROC=0.7097 AUPRC=0.0444 calib=isotonic (33s)
+[B/15min] done in 2.7 min | pooled AUROC 0.6649 | libraries chosen {'catboost': 4, 'xgboost': 1} | leakage checks passed
+
+[baseline/5min] rows=425450 cases=2672 positives=3174 (0.75%)
+  [baseline/5min] fold 0: logistic {} inner=0.5841 outer AUROC=0.6077 AUPRC=0.0107 calib=isotonic (5s)
+  [baseline/5min] fold 1: logistic {} inner=0.5866 outer AUROC=0.5853 AUPRC=0.0113 calib=isotonic (5s)
+  [baseline/5min] fold 2: logistic {} inner=0.5930 outer AUROC=0.5698 AUPRC=0.0113 calib=isotonic (5s)
+  [baseline/5min] fold 3: logistic {} inner=0.5826 outer AUROC=0.6115 AUPRC=0.0105 calib=isotonic (5s)
+  [baseline/5min] fold 4: logistic {} inner=0.5866 outer AUROC=0.5889 AUPRC=0.0104 calib=isotonic (5s)
+[baseline/5min] done in 0.4 min | pooled AUROC 0.5909 | libraries chosen {'logistic': 5} | leakage checks passed
+
+[baseline/10min] rows=415700 cases=2672 positives=5018 (1.21%)
+  [baseline/10min] fold 0: logistic {} inner=0.5323 outer AUROC=0.5255 AUPRC=0.0118 calib=isotonic (5s)
+  [baseline/10min] fold 1: logistic {} inner=0.5415 outer AUROC=0.5472 AUPRC=0.0138 calib=isotonic (4s)
+  [baseline/10min] fold 2: logistic {} inner=0.5443 outer AUROC=0.5363 AUPRC=0.0164 calib=isotonic (4s)
+  [baseline/10min] fold 3: logistic {} inner=0.5347 outer AUROC=0.5555 AUPRC=0.0129 calib=isotonic (4s)
+  [baseline/10min] fold 4: logistic {} inner=0.5368 outer AUROC=0.5057 AUPRC=0.0128 calib=isotonic (4s)
+[baseline/10min] done in 0.3 min | pooled AUROC 0.5336 | libraries chosen {'logistic': 5} | leakage checks passed
+
+[baseline/15min] rows=404332 cases=2671 positives=6159 (1.52%)
+  [baseline/15min] fold 0: logistic {} inner=0.5361 outer AUROC=0.5133 AUPRC=0.0155 calib=isotonic (4s)
+  [baseline/15min] fold 1: logistic {} inner=0.5410 outer AUROC=0.5499 AUPRC=0.0188 calib=isotonic (4s)
+  [baseline/15min] fold 2: logistic {} inner=0.5452 outer AUROC=0.5427 AUPRC=0.0221 calib=platt (5s)
+  [baseline/15min] fold 3: logistic {} inner=0.5100 outer AUROC=0.5555 AUPRC=0.0173 calib=platt (4s)
+  [baseline/15min] fold 4: logistic {} inner=0.5338 outer AUROC=0.5349 AUPRC=0.0215 calib=platt (4s)
+[baseline/15min] done in 0.3 min | pooled AUROC 0.5385 | libraries chosen {'logistic': 5} | leakage checks passed

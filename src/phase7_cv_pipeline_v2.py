@@ -29,7 +29,11 @@ Leakage checks (run fails if violated): no case in both train and test (outer an
 inner); MICE fitted statistics differ across outer folds.
 
 Ablations: --drop-features f1 f2 ... removes features from every model (tag gets a
-'_drop-...' suffix); combine with --fixed-config-from for a quick run.
+'_drop-...' suffix); --only-features f1 ... keeps ONLY those features (e.g. a timing-only
+reference model; tag gets '_only-...'). Combine with --fixed-config-from for a quick run.
+
+Surgery-period sensitivity analysis (entry 49): --period surgery uses the opstart-opend
+labels from Phase 6 (--period surgery); tag gets a '_surgery' suffix; same outer folds.
 
 Sensitivity runs (Tests 3, 4, 6): --variant / --min-window-frac with
 --fixed-config-from <tag> reuse the primary run's selected library + hyperparameters per
@@ -264,9 +268,19 @@ def main():
     ap.add_argument('--fixed-config-from', default=None, help='tag of a finished run to reuse configs from')
     ap.add_argument('--n-jobs', type=int, default=-1)
     ap.add_argument('--drop-features', nargs='+', default=[], help='ablation: remove these features')
+    ap.add_argument('--only-features', nargs='+', default=[], help='reference model: use ONLY these features')
+    ap.add_argument('--period', choices=['anesthesia', 'surgery'], default='anesthesia',
+                    help='which Phase 6 label set to use (surgery = sensitivity analysis, entry 49)')
     args = ap.parse_args()
 
     tag = f"{args.variant}_w{int(round(args.min_window_frac * 100))}"
+    if args.period == 'surgery':
+        tag += '_surgery'
+    if args.only_features:
+        tag += '_only-' + '-'.join(args.only_features)
+        for spec in MODEL_SPECS.values():
+            spec['features'] = list(args.only_features)
+            spec['mice'] = [f for f in spec['mice'] if f in args.only_features]
     if args.drop_features:
         tag += '_drop-' + '-'.join(args.drop_features)
         for spec in MODEL_SPECS.values():
@@ -280,7 +294,10 @@ def main():
         with open(log_path, 'a', encoding='utf-8') as fh:
             fh.write(msg + '\n')
 
-    labels = pd.read_parquet(os.path.join(PROCESSED_DIR, 'phase6_labels_v2.parquet'))
+    labels = pd.read_parquet(os.path.join(PROCESSED_DIR, 'phase6_labels_v2.parquet' if args.period == 'anesthesia'
+                                          else 'phase6_labels_v2_surgery.parquet'))
+    if args.period == 'surgery' and not os.path.exists(FOLDS_FILE):
+        raise RuntimeError('Run the primary (anesthesia) analysis first so the outer folds exist.')
     outer_folds = load_outer_folds(labels[labels['variant'] == 'sqi_primary'])
     labels = labels[labels['variant'] == args.variant]
     feat_cols = sorted(set(MODEL_A_FEATURES) | set(BASELINE_FEATURES) | {f'{t}_frac' for t in CORE_TRACKS})
@@ -289,7 +306,8 @@ def main():
     base = labels.merge(feats, on=['caseid', 't'], how='inner')
     window_ok = np.logical_and.reduce([base[f'{t}_frac'] >= args.min_window_frac for t in CORE_TRACKS])
     log(f"=== Phase 7 v2 run '{tag}' | variant={args.variant} min_window_frac={args.min_window_frac} "
-        f"fixed_config_from={args.fixed_config_from} drop_features={args.drop_features} ===")
+        f"fixed_config_from={args.fixed_config_from} drop_features={args.drop_features} "
+        f"only_features={args.only_features} period={args.period} ===")
     log(f"Labeled rows: {len(base)}; passing window rule: {int(window_ok.sum())} "
         f"({window_ok.mean()*100:.1f}%)")
     base = base[window_ok].reset_index(drop=True)

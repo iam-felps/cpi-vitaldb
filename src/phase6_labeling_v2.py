@@ -19,15 +19,20 @@ Rules (decision log entry 45), applied per variant, per window ending at t:
      Applied to both classes. An unobservable horizon is not evidence of "no event".
   Positive for horizon h: a sustained event (>=180 s) of that variant starts in (t, t+h].
 Cases with missing anestart/aneend in the clinical table are excluded and counted.
+
+--period surgery (sensitivity analysis, entry 49): R1 and R3 use [opstart, opend] instead
+of [anestart, aneend], excluding deliberate end-of-case lightening after surgery ends.
+Outputs get a '_surgery' suffix; the primary files are untouched.
 """
 
 import os
+import argparse
 import sys
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from cpi_config import PROCESSED_DIR, RESULTS_DIR, INTERIM_DIR, HORIZONS_S
+from cpi_config import PROCESSED_DIR, RESULTS_DIR, INTERIM_DIR, HORIZONS_S, CLINICAL_SNAPSHOT
 
 MIN_HORIZON_BIS_COVERAGE = 0.5   # proposed default, see entry 45 — printed impact below
 VARIANTS = {
@@ -76,13 +81,25 @@ def label_case(t, bis, events, ane_start, ane_end):
 
 
 if __name__ == '__main__':
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--period', choices=['anesthesia', 'surgery'], default='anesthesia',
+                    help="anesthesia = [anestart, aneend] (primary, entry 46); "
+                         "surgery = [opstart, opend] (sensitivity analysis, entry 49)")
+    args = ap.parse_args()
+    suffix = '' if args.period == 'anesthesia' else '_surgery'
     feat = pd.read_parquet(os.path.join(PROCESSED_DIR, 'phase5_features_v2.parquet'),
                            columns=['caseid', 't', 't_case_s', 'elapsed_time_s', 'aneend_case_s'])
-    feat['ane_start_grid'] = feat['t'] - feat['elapsed_time_s']
-    feat['ane_end_grid'] = feat['t'] - feat['t_case_s'] + feat['aneend_case_s']
+    offset = feat['t_case_s'] - feat['t']                      # grid seconds -> case seconds
+    if args.period == 'anesthesia':
+        feat['ane_start_grid'] = feat['t'] - feat['elapsed_time_s']
+        feat['ane_end_grid'] = feat['t'] - feat['t_case_s'] + feat['aneend_case_s']
+    else:
+        clin = pd.read_csv(CLINICAL_SNAPSHOT).set_index('caseid')
+        feat['ane_start_grid'] = feat['caseid'].map(clin['opstart']) - offset
+        feat['ane_end_grid'] = feat['caseid'].map(clin['opend']) - offset
     no_timing = feat.groupby('caseid')[['ane_start_grid', 'ane_end_grid']].first().isna().any(axis=1)
-    print(f"Feature rows: {len(feat)}, cases: {feat['caseid'].nunique()}; "
-          f"cases excluded for missing anestart/aneend: {int(no_timing.sum())}")
+    print(f"Period: {args.period}. Feature rows: {len(feat)}, cases: {feat['caseid'].nunique()}; "
+          f"cases excluded for missing period start/end: {int(no_timing.sum())}")
     feat = feat[~feat['caseid'].isin(no_timing[no_timing].index)]
 
     events = {v: load_events(v) for v in VARIANTS}
@@ -107,7 +124,7 @@ if __name__ == '__main__':
         n0 = len(d)
         d1 = d[d['in_period']]
         d2 = d1[~d1['in_progress']]
-        row = {'variant': v, 'rows_total': n0, 'removed_outside_anesthesia': n0 - len(d1),
+        row = {'variant': v, 'period': args.period, 'rows_total': n0, 'removed_outside_period': n0 - len(d1),
                'removed_active_episode': len(d1) - len(d2), 'rows_eligible': len(d2)}
         for h in HORIZONS_S:
             cens = int(d2[f'censored_{h}'].sum())
@@ -119,9 +136,9 @@ if __name__ == '__main__':
         attrition.append(row)
 
     labels = labels[labels['in_period'] & ~labels['in_progress']].drop(columns=['in_period', 'in_progress'])
-    labels.to_parquet(os.path.join(PROCESSED_DIR, 'phase6_labels_v2.parquet'))
+    labels.to_parquet(os.path.join(PROCESSED_DIR, f'phase6_labels_v2{suffix}.parquet'))
     att = pd.DataFrame(attrition)
-    att.to_csv(os.path.join(RESULTS_DIR, 'phase6_label_attrition_v2.csv'), index=False)
+    att.to_csv(os.path.join(RESULTS_DIR, f'phase6_label_attrition_v2{suffix}.csv'), index=False)
     pd.set_option('display.width', 250)
     print("\n=== Label attrition and class balance (per variant) ===")
     print(att.T.to_string())
