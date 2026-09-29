@@ -115,10 +115,19 @@ def cohort_flow(clin):
         lab = lab[lab['variant'] == 'sqi_primary']
         for c in sorted(gap):
             fc = f[f['caseid'] == c]
-            ok70 = int((fc[['HR_frac', 'ART_MBP_frac', 'PLETH_SPO2_frac', 'ETCO2_frac']] >= 0.7).all(axis=1).sum())
-            lc = lab[lab['caseid'] == c]
-            why.append(f"case {c}: {len(fc)} feature windows, {ok70} pass the 70% rule, "
-                       f"{len(lc)} eligible labelled windows")
+            passing = fc[(fc[['HR_frac', 'ART_MBP_frac', 'PLETH_SPO2_frac', 'ETCO2_frac']] >= 0.7).all(axis=1)]
+            lc = lab[lab['caseid'] == c].merge(passing[['caseid', 't']], on=['caseid', 't'])
+            obs = {h: int(lc[f'label_{h}'].notna().sum()) for h in ('5min', '10min', '15min')}
+            if len(passing) == 0:
+                reason = 'no window passes the 70% completeness rule'
+            elif len(lc) == 0:
+                reason = 'no window passing the 70% rule is eligible (outside anesthesia or active episode)'
+            elif sum(obs.values()) == 0:
+                reason = 'all labels censored (horizon beyond anesthesia end or BIS coverage < 50%)'
+            else:
+                reason = 'UNEXPECTED: observable labels exist'
+            why.append(f"case {c}: {len(fc)} feature windows, {len(passing)} pass the 70% rule, {len(lc)} of these "
+                       f"eligible, observable labels 5/10/15 min {obs['5min']}/{obs['10min']}/{obs['15min']} -> {reason}")
     flow.append(('Cases contributing analysis windows', len(analysed & s6), len(gap),
                  'no window with >= 70% completeness and an observable label' + (f" ({'; '.join(why)})" if why else '')))
     if analysed - s6:
