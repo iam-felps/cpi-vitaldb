@@ -157,7 +157,6 @@ Not performed, with documented reasons: Test 5 re-runs (replaced by a gap-length
 
 **Outstanding before submission:**
 - A descriptive comparison of excluded vs retained cases on the final cohort.
-- Run `phase9_shap_consistency_v2.py` and log the Spearman p-values.
 
 **Done when:** every analysis above has a results file and a decision-log entry.
 

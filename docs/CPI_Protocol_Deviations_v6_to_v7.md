@@ -64,7 +64,7 @@ Types of change:
 | D5 | Test 7: vasopressor / fluid-bolus negative control (Mann–Whitney U) | Not performed | Deviation | VitalDB records only case-level total doses of bolus vasopressors, with no administration times | 37 | Reported as a data limitation |
 | D6 | Matched sampling: 1–2 negatives per patient ≥ 20 min from any event, reused across horizons | Up to 2 windows per case, drawn at random (seed 2311), ≥ 20 min from the start and end of every event, ≥ 10 min apart, negative at 15 min and present at all horizons (5,304 windows, 2,659 cases); positives = all primary positive windows; scored with the saved out-of-fold predictions; class separation as standardised mean differences | Specification / Correction | v1 farthest-point rule always picked the first and last window of event-free cases | 53 | — |
 | D7 | Phase stratification: onset relative to anesthesia, early 0–0.4 / mid 0.4–0.8 / late > 0.8; recall + AUROC/AUPRC | As planned; within-phase AUROC and event-level recall | Specification | — | 49, 50 | — |
-| D8 | SHAP consistency: Spearman (with p-value) and Jaccard of top-50/top-100 features | Out-of-fold TreeSHAP on 2,000 test windows per fold; Spearman (with p-value) across horizons and folds; Jaccard of top-5/top-10 features | Deviation | Models have 19–23 features, so top-50/100 sets are undefined | 54 | p-values computed by `phase9_shap_consistency_v2.py` (outstanding item O2) |
+| D8 | SHAP consistency: Spearman (with p-value) and Jaccard of top-50/top-100 features | Out-of-fold TreeSHAP on 2,000 test windows per fold; Spearman (with p-value) across horizons and folds; Jaccard of top-5/top-10 features | Deviation | Models have 19–23 features, so top-50/100 sets are undefined | 54, 59 | p-values computed by `phase9_shap_consistency_v2.py` (entry 59) |
 | D9 | Effective sample size per Riley et al. / Wang et al. | ANOVA intraclass correlation of the label within cases, design effect with unequal-cluster correction (Kish; Eldridge), plus an empirical AUROC design effect (patient-level vs window-level bootstrap variance) | Specification | — | 55 | — |
 | D10 | Latency on two hardware tiers | Both tiers on one laptop (Intel Core i7-1280P): all cores vs single thread pinned to one core | Specification (limitation) | Both configurations ran on the same laptop | 56 | Absolute latency on low-end hardware not measured |
 | D11 | Multiplicity: only Test 1 (A vs B) confirmatory | Unchanged | — | — | — | — |
@@ -85,4 +85,4 @@ Types of change:
 | # | Item | Status |
 |---|---|---|
 | O1 | Descriptive comparison of excluded vs retained cases (selection-bias check, v6 §2) | Done in v1 only (3,213-case cohort); needs redoing for the final 2,673-case cohort |
-| O2 | Spearman p-values for SHAP ranking consistency (v6 §7) | Script written (`phase9_shap_consistency_v2.py`, reads `shap_importance.csv`); to be run and logged |
+| O2 | Spearman p-values for SHAP ranking consistency (v6 §7) | Done (entry 59): all p < 0.0001 |
