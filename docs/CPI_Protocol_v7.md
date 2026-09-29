@@ -290,6 +290,13 @@ This study is conducted on a single-center, single-country, high-resource academ
 
 ## **11. Manuscript Discussion Reminders (Not Structural Design Changes)**
 
+**Agreed framing (study team, 2026-09-29; decision log entry 60):**
+1. **Headline:** a calibrated forecasting index, together with a transparent account of what it actually predicts. Most discrimination reflects the anesthetic time course, meaning elapsed time and drug concentrations: events concentrate at the end of anesthesia, pooled AUROC exceeds within-phase AUROC, and mid-case episodes are not anticipated.
+2. **Second message (methodological):** EMG-based BIS artifact filtering removes a large share of genuine BIS≥60 time and degrades labels, and pooled AUROC in rolling-window designs is inflated by timing.
+3. **Low-resource case (Model B):** reported as a feasibility result. Model B adds discrimination over timing alone and runs in real time on a single laptop core. Its absolute performance is moderate, and no claim of effectiveness in low-resource settings is made.
+
+The Model A vs Model B comparison remains the pre-specified primary confirmatory test and is reported as such. The negative control, planned in earlier drafts as a headline contribution, was not feasible (Section 7).
+
 * **AnesNet ablation finding (Qi et al., 2026):** their non-BIS multichannel model (ABP/ECG/PLETH/ETCO2) achieved AUROC <0.63 versus 0.82–0.90 for BIS-inclusive models on a related deep-anesthesia forecasting task in the same database. Must be cited in the Introduction and/or Discussion as evidence bearing on the Model A vs. Model B hypothesis, noting that their outcome (BIS<40, excessive depth) is physiologically distinct from this study's (BIS≥60).
 * **Class-separation diagnostic:** carry the matched-sampling interpretive caveat (a more separated task can raise performance without better models) into the Discussion.
 * **EMG/arousal correlation finding:** deserves its own Discussion paragraph, using the full-cohort figures (Section 3.2).

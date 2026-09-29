@@ -4,7 +4,8 @@ Machine-learning study forecasting sustained BIS ≥ 60 episodes 5, 10 and 15 mi
 routine intraoperative monitoring (Model A: with TCI drug concentrations; Model B: without),
 with nested case-level cross-validation and calibrated probabilities.
 
-- Protocol: `docs/` (protocol v6, implementation guide v3)
+- Protocol as executed: `docs/CPI_Protocol_v7.md`; implementation guide: `docs/CPI_Implementation_Guide_v4.md`
+- Differences from the pre-specified protocol v6: `docs/CPI_Protocol_Deviations_v6_to_v7.md`
 - Every analytical decision, with numbers: `docs/decision_log.md` (entries cited below)
 - Shared constants (paths, seed 2311, horizons, feature lists): `src/cpi_config.py`
 
@@ -21,7 +22,7 @@ vitaldb. Run every command from the project root:
 ## Run order
 
 Steps marked *network* need internet access to VitalDB; everything else reads local files.
-Row counts are those of the published analysis.
+Case counts are those of the final analysis.
 
 ### Phase 2–3 — data and cohort (6,388 → 3,066 cases)
 
@@ -65,10 +66,11 @@ and `{tag}_log.txt`, whose first line records the exact options used. The primar
 | Test 3 `emg40_w70`, `emg35_w70`, `unfiltered_w70` | `--variant emg40` (etc.) `--models A B --fixed-config-from sqi_primary_w70` |
 | Test 4 `sqi15_w70` | `--variant sqi15 --models A B --fixed-config-from sqi_primary_w70` |
 | Test 6 `sqi_primary_w90`, `sqi_primary_w50` | `--min-window-frac 0.9` / `0.5` `--models A B --fixed-config-from sqi_primary_w70` |
-| Surgery period `sqi_primary_w70_surgery` | `--period surgery` |
-| Ablation (drug features removed) | `--models A --drop-features tiva_propofol PPF20_CE_mean RFTN20_CE_mean` |
-| Reference: timing only | `--models A --only-features elapsed_time_s` (and with `--period surgery`) |
-| Reference: anesthetic course | `--models A --only-features elapsed_time_s PPF20_CE_mean RFTN20_CE_mean tiva_propofol` (and with `--period surgery`) |
+| Surgery period `sqi_primary_w70_surgery` | `--period surgery --fixed-config-from sqi_primary_w70` |
+| Ablation (drug features removed) | `--models A --drop-features tiva_propofol PPF20_CE_mean RFTN20_CE_mean --fixed-config-from sqi_primary_w70` |
+| Reference: timing only | `--models A --only-features elapsed_time_s --fixed-config-from sqi_primary_w70` (and with `--period surgery`) |
+| Reference: anesthetic course | `--models A --only-features elapsed_time_s PPF20_CE_mean RFTN20_CE_mean tiva_propofol --fixed-config-from sqi_primary_w70` (and with `--period surgery`) |
+| Elapsed-time ablation | `--models A B --drop-features elapsed_time_s --fixed-config-from sqi_primary_w70` |
 
 Check each run's log header for the exact options before re-running.
 
@@ -81,6 +83,7 @@ Check each run's log header for the exact options before re-running.
 | `phase9_compare_runs_v2.py` | Tests 3, 4, 6 and reference-model comparisons | 52 |
 | `phase9_matched_sampling_v2.py` | matched negative-sampling secondary analysis | 53 |
 | `phase9_shap_v2.py` | out-of-fold TreeSHAP (refits each fold's selected model) | 54 |
+| `phase9_shap_consistency_v2.py` | Spearman correlations with p-values and Jaccard indices from `shap_importance.csv` | |
 | `phase9_effective_n_v2.py` | clustering-adjusted effective sample size | 55 |
 | `phase9_latency_benchmark_v2.py --tier workstation` and `--tier single` | per-window latency (refits fold-0 models) | 56 |
 | `phase9_table1_attrition_v2.py` | cohort flow diagram, Table 1, repeat-patient count | 57 |
