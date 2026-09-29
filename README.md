@@ -80,7 +80,7 @@ Check each run's log header for the exact options before re-running.
 |---|---|---|
 | `phase9_diagnostic_metrics_v2.py --tag sqi_primary_w70` (and `_surgery`) | AUROC/AUPRC, sensitivity, specificity, PPV, NPV at cross-fitted Youden thresholds; event-level sensitivity; alarms/h; reliability; decision curves | |
 | `phase9_tests_subgroups_v2.py --tag ...` | Hypothesis tests 1–2, subgroups, phase stratification (patient-level paired bootstrap) | |
-| `phase9_compare_runs_v2.py` | Tests 3, 4, 6 and reference-model comparisons | 52 |
+| `phase9_compare_runs_v2.py` | Tests 3, 4, 6, reference-model and ablation comparisons (`--sets` runs only the named sets; other rows are kept) | 52, 63 |
 | `phase9_matched_sampling_v2.py` | matched negative-sampling secondary analysis | 53 |
 | `phase9_shap_v2.py` | out-of-fold TreeSHAP (refits each fold's selected model) | 54 |
 | `phase9_shap_consistency_v2.py` | Spearman correlations with p-values and Jaccard indices from `shap_importance.csv` | |

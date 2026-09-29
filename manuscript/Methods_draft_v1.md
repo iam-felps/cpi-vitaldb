@@ -16,7 +16,7 @@ We included cases performed under general anesthesia, of all ASA physical status
 3. cases lacking any of the six required monitoring tracks (heart rate [HR], invasive mean arterial pressure [MAP], peripheral oxygen saturation [SpO2], end-tidal carbon dioxide [ETCO2], BIS and BIS electromyography [EMG]), verified from each case file's track list;
 4. cases with extreme missingness, defined empirically as missingness above the cohort's 95th percentile for HR or MAP over the whole case, or for BIS over the final 45 minutes of the recording.
 
-The 45-minute minimum exceeds the 20-minute floor needed for a single labelled window (5-minute feature window plus 15-minute maximum horizon), to exclude very short procedures that lack a maintenance phase.
+Characteristics of retained cases and of cases excluded for data availability were compared descriptively using standardised mean differences. The 45-minute minimum exceeds the 20-minute floor needed for a single labelled window (5-minute feature window plus 15-minute maximum horizon), to exclude very short procedures that lack a maintenance phase.
 
 ## Data preprocessing
 
