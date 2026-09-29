@@ -88,6 +88,7 @@ Check each run's log header for the exact options before re-running.
 | `phase9_latency_benchmark_v2.py --tier workstation` and `--tier single` | per-window latency (refits fold-0 models) | 56 |
 | `phase9_table1_attrition_v2.py` | cohort flow diagram, Table 1, repeat-patient count | 57 |
 | `phase9_repeat_patients_v2.py` | repeat-patient sensitivity analysis | 58 |
+| `phase9_selection_bias_v2.py` | retained vs excluded cases (selection-bias check) | 61 |
 
 ## Diagnostics (read-only checks, cited in the decision log)
 

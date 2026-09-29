@@ -145,18 +145,16 @@ All from saved predictions unless noted. All intervals and tests resample cases 
 
 1. `phase9_diagnostic_metrics_v2.py --tag sqi_primary_w70` (and `_surgery`): AUROC/AUPRC with CIs; calibration (Brier, ECE, intercept, slope, reliability diagrams); cross-fitted Youden operating point (sensitivity, specificity, PPV, NPV, alarms per hour, event-level sensitivity, lead time); decision curves.
 2. `phase9_tests_subgroups_v2.py --tag ...`: Test 1 (A vs B; each vs baseline), Test 2 (horizons, on windows eligible at both), ASA and age subgroups (descriptive), phase stratification (within-phase AUROC and event recall).
-3. `phase9_compare_runs_v2.py`: Tests 3, 4, 6 and reference-model comparisons (paired, on shared windows, each run with its own labels).
+3. `phase9_compare_runs_v2.py`: Tests 3, 4, 6, reference-model and ablation comparisons (paired, on shared windows, each run with its own labels). `--sets` reruns only the named sets and keeps the other rows of `run_comparisons.csv`.
 4. `phase9_matched_sampling_v2.py`: matched negative sampling with class-separation diagnostic.
 5. `phase9_shap_v2.py`: out-of-fold TreeSHAP (refits each fold's selected model; checks refit reproduces saved predictions and SHAP additivity); rankings and consistency across horizons and folds. Then `phase9_shap_consistency_v2.py` adds Spearman p-values from `shap_importance.csv`.
 6. `phase9_effective_n_v2.py`: ICC design effect and empirical AUROC design effect.
 7. `phase9_latency_benchmark_v2.py --tier workstation` and `--tier single`: per-window latency (recomputes features and checks them against stored values).
 8. `phase9_table1_attrition_v2.py`: cohort flow (cross-checked against every saved case list), flow diagram, Table 1, repeat-patient count.
 9. `phase9_repeat_patients_v2.py`: repeat-patient sensitivity analysis.
+10. `phase9_selection_bias_v2.py`: baseline characteristics of retained vs excluded cases (by exclusion reason), with standardized mean differences.
 
 Not performed, with documented reasons: Test 5 re-runs (replaced by a gap-length check, entry 41); Test 7 negative control (no vasopressor timestamps in VitalDB, entry 37).
-
-**Outstanding before submission:**
-- A descriptive comparison of excluded vs retained cases on the final cohort.
 
 **Done when:** every analysis above has a results file and a decision-log entry.
 

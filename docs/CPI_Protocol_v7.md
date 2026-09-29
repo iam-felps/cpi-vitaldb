@@ -107,7 +107,7 @@ These bounds are compared against precedent in comparable VitalDB-based intraope
 
 **Why the original EMG-threshold approach was revised.** The v5 protocol specified a standalone EMG>40 dB filter. Measured on the full, time-aligned cohort (3,066 cases; 38.2 million valid BIS seconds, of which 9.2% are BIS≥60), EMG>40 dB removes 4.1% of all valid BIS but 41.1% of all BIS≥60 time (about 10-fold enrichment); EMG>35 dB removes 49.6% of BIS≥60 time. By contrast, SQI<50 removes 2.5% of all valid BIS and 5.6% of BIS≥60 time (about 2.3-fold). (Protocol v6 cited 63% for EMG>40 dB, from earlier subsample or pre-alignment measurements; Deviations A5.) Elevated frontalis EMG is therefore concentrated during exactly the episodes this study aims to detect — consistent with EMG acting as a correlate of arousal and lightening anesthesia rather than as independent noise. A targeted literature review found no manufacturer-specified or widely used absolute EMG dB cutoff for BIS artifact rejection; the one clinical precedent for an EMG cutoff (Kim et al. 2022, *Ann Palliat Med*, EMG>35 dB during emergence) is used as a sensitivity comparator. SQI<50 is not perfectly neutral either (2.3-fold enrichment); this residual tradeoff is discussed in Section 10.
 
-**Stored label variants.** Five BIS signals are built in one aligned pass, each with LOCF ≤15 s: SQI<50 filtered (primary); SQI<15 filtered; EMG>40 dB filtered; EMG>35 dB filtered; unfiltered (BIS = 0 removed only). Sustained events are detected on each variant separately. On valid BIS readings, SQI<15 removes only 0.002% of samples, so the SQI-threshold comparison (Test 4) effectively compares SQI<50 with no SQI filtering (Deviations A7).
+**Stored label variants.** Five BIS signals are built in one aligned pass, each with LOCF ≤15 s: SQI<50 filtered (primary); SQI<15 filtered; EMG>40 dB filtered; EMG>35 dB filtered; unfiltered (BIS = 0 removed only). Sustained events are detected on each variant separately. SQI<15 removes only 0.07% of valid BIS seconds (0.2% of BIS≥60 time), so the SQI-threshold comparison (Test 4) effectively compares SQI<50 with almost no SQI filtering (Deviations A7).
 
 ### **3.3 Missing Data Imputation & Exclusion**
 
@@ -194,7 +194,7 @@ Because BIS≥60 after surgery ends is often deliberate lightening rather than i
 
 ### **5.9 Reference Models and Ablations (added)**
 
-To quantify how much discrimination the anesthetic time course alone explains, models are refit with the primary configurations and folds using: (a) elapsed time only; (b) elapsed time + drug features (the "anesthetic course"); (c) Model A without drug features; (d) Models A and B without elapsed time. Model A is compared with (b) and Model B with (a) by paired bootstrap, in both analysis periods (Deviations E2–E3).
+To quantify how much discrimination the anesthetic time course alone explains, models are refit with the primary configurations and folds using: (a) elapsed time only; (b) elapsed time + drug features (the "anesthetic course"); (c) Model A without drug features; (d) Models A and B without elapsed time. Model A is compared with (b) and Model B with (a) by paired bootstrap, in both analysis periods; Model A is compared with (c), (c) with Model B, and each model with its version (d), in the anesthesia period (Deviations E2–E3).
 
 ## **6. Multi-Horizon Forecasting & Probability Calibration**
 
@@ -287,6 +287,7 @@ This study is conducted on a single-center, single-country, high-resource academ
 * **Sample size:** effective events per candidate feature are reported and compared with published guidance for flexible machine-learning methods.
 * **Computational benchmark:** both latency configurations ran on one laptop processor; absolute latency on low-end hardware was not measured.
 * **Case 3609:** one eligible case was excluded because its track list could not be downloaded during cohort assembly.
+* **Selection by monitoring (spectrum):** requiring continuous invasive MAP (and BIS) restricts the cohort to cases monitored with an arterial line. Compared with eligible cases excluded for data availability, retained cases were older, more often male, more often ASA III, far more often thoracic surgery, and had much longer surgery (median 160 vs 80 min); breast, colorectal and biliary surgery were underrepresented (selection-bias table, Supplement). The models apply to this population only. Model B's pragmatic rationale is further limited because in many low-resource settings blood pressure is measured non-invasively and intermittently, not continuously as here.
 
 ## **11. Manuscript Discussion Reminders (Not Structural Design Changes)**
 

@@ -13,11 +13,15 @@ Built-in comparison sets (--sets, default all):
   test6   primary (>=70% complete) vs >=90% and >=50%       (Models A, B)
   refs    Model A vs anesthetic course (time + drugs); Model B vs timing only;
           anesthesia and surgery periods
+  ablations  Model A vs Model A without drug features; Model A without drug features vs
+          Model B; Models A and B vs themselves without elapsed time (anesthesia period).
+          Ablation runs are found whatever order their dropped features were listed in.
 Missing runs are skipped with a message. Output: results/phase9_v2/run_comparisons.csv
 
-Usage: python src/phase9_compare_runs_v2.py [--sets test3 test4 test6 refs] [--n-boot 1000]
+Usage: python src/phase9_compare_runs_v2.py [--sets test3 test4 test6 refs ablations] [--n-boot 1000]
 """
 import argparse
+import glob
 import os
 import sys
 import time
@@ -34,10 +38,21 @@ OUT_DIR = os.path.join(RESULTS_DIR, 'phase9_v2')
 P = 'sqi_primary_w70'
 COURSE = 'only-elapsed_time_s-PPF20_CE_mean-RFTN20_CE_mean-tiva_propofol'
 TIMING = 'only-elapsed_time_s'
+DRUGS = ['tiva_propofol', 'PPF20_CE_mean', 'RFTN20_CE_mean']
+
+
+def drop_tag(features):
+    """Tag of the primary run with exactly these features dropped (any order), or None."""
+    want = set(features)
+    for f in glob.glob(os.path.join(IN_DIR, f'{P}_drop-*_predictions.parquet')):
+        tag = os.path.basename(f).rsplit('_', 3)[0]          # strip _{model}_{h}_predictions.parquet
+        if set(tag[len(P) + len('_drop-'):].split('-')) == want:
+            return tag
+    return f"{P}_drop-{'-'.join(features)}"                  # not found: reported as missing later
 
 
 def comparison_sets():
-    s = {'test3': [], 'test4': [], 'test6': [], 'refs': []}
+    s = {'test3': [], 'test4': [], 'test6': [], 'refs': [], 'ablations': []}
     for m in ('A', 'B'):
         for v in ('emg40', 'emg35', 'unfiltered'):
             s['test3'].append((f'Test 3: {v}', m, P, m, f'{v}_w70'))
@@ -48,6 +63,11 @@ def comparison_sets():
         lab = 'surgery' if per else 'anesthesia'
         s['refs'].append((f'Model A vs anesthetic course ({lab})', 'A', P + per, 'A', f'{P}{per}_{COURSE}'))
         s['refs'].append((f'Model B vs timing only ({lab})', 'B', P + per, 'A', f'{P}{per}_{TIMING}'))
+    nodrug, noelapsed = drop_tag(DRUGS), drop_tag(['elapsed_time_s'])
+    s['ablations'].append(('Model A vs Model A without drug features', 'A', P, 'A', nodrug))
+    s['ablations'].append(('Model A without drug features vs Model B', 'A', nodrug, 'B', P))
+    for m in ('A', 'B'):
+        s['ablations'].append((f'Model {m} vs Model {m} without elapsed time', m, P, m, noelapsed))
     return s
 
 
@@ -58,7 +78,7 @@ def load(tag, model, h):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--sets', nargs='+', default=['test3', 'test4', 'test6', 'refs'])
+    ap.add_argument('--sets', nargs='+', default=['test3', 'test4', 'test6', 'refs', 'ablations'])
     ap.add_argument('--n-boot', type=int, default=1000)
     args = ap.parse_args()
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -99,8 +119,19 @@ def main():
                       f"[{r['auroc_diff_ci_lo']:+.4f}, {r['auroc_diff_ci_hi']:+.4f}] p={r['auroc_p']:.3g} | "
                       f"common windows {len(j)} ({r['share_of_run1_windows']*100:.0f}% of run 1) "
                       f"({time.time()-t0:.0f}s)", flush=True)
-            pd.DataFrame(rows).to_csv(os.path.join(OUT_DIR, 'run_comparisons.csv'), index=False)
-    print(f"\nSaved {len(rows)} comparisons to {os.path.join(OUT_DIR, 'run_comparisons.csv')}")
+            save(rows, args.sets)
+    n_kept = save(rows, args.sets)
+    print(f"\nSaved {len(rows)} new comparisons (sets: {', '.join(args.sets)}) plus {n_kept} kept from other sets "
+          f"to {os.path.join(OUT_DIR, 'run_comparisons.csv')}")
+
+
+def save(rows, sets_run):
+    """Replace only the rows of the sets just run; keep every other set's rows."""
+    path = os.path.join(OUT_DIR, 'run_comparisons.csv')
+    old = pd.read_csv(path) if os.path.exists(path) else pd.DataFrame(columns=['set'])
+    kept = old[~old['set'].isin(sets_run)]
+    pd.concat([kept, pd.DataFrame(rows)], ignore_index=True).to_csv(path, index=False)
+    return len(kept)
 
 
 if __name__ == '__main__':

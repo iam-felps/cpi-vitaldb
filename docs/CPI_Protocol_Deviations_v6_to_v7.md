@@ -84,5 +84,5 @@ Types of change:
 
 | # | Item | Status |
 |---|---|---|
-| O1 | Descriptive comparison of excluded vs retained cases (selection-bias check, v6 §2) | Done in v1 only (3,213-case cohort); needs redoing for the final 2,673-case cohort |
+| O1 | Descriptive comparison of excluded vs retained cases (selection-bias check, v6 §2) | Done (entry 61): retained cases are older, more often male, ASA III, thoracic and longer surgeries than cases excluded for data availability, reflecting the requirement for invasive arterial pressure |
 | O2 | Spearman p-values for SHAP ranking consistency (v6 §7) | Done (entry 59): all p < 0.0001 |
