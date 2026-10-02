@@ -1,0 +1,17 @@
+Configuration,Component,"Mean (SD), ms","Median, ms","95th percentile, ms","Maximum, ms"
+All cores,Hemodynamic features (4 signals),0.7 (0.2),0.7,1.1,2.4
+All cores,HR DFA α1 and α2,91.9 (25.7),83.2,142.7,218.5
+All cores,HR sample entropy,33.6 (11.1),30.4,55.0,81.4
+All cores,Drug features,0.1 (0.1),0.1,0.2,0.5
+All cores,"Inference, Model A",12.9 (5.4),11.9,19.0,67.7
+All cores,"Inference, Model B",10.4 (3.6),9.7,14.8,62.6
+All cores,"Total, Model A",139.2 (32.0),134.3,196.6,277.9
+All cores,"Total, Model B",136.6 (31.3),131.5,192.9,269.8
+"Single thread, one core",Hemodynamic features (4 signals),0.8 (0.9),0.6,1.9,19.1
+"Single thread, one core",HR DFA α1 and α2,90.2 (22.8),84.9,125.5,447.1
+"Single thread, one core",HR sample entropy,29.1 (9.7),27.3,40.4,206.2
+"Single thread, one core",Drug features,0.1 (0.2),0.1,0.1,6.1
+"Single thread, one core","Inference, Model A",11.3 (5.3),10.0,17.6,71.7
+"Single thread, one core","Inference, Model B",10.1 (5.2),8.7,17.3,81.4
+"Single thread, one core","Total, Model A",131.5 (29.9),124.7,179.6,486.1
+"Single thread, one core","Total, Model B",130.2 (29.7),122.9,177.7,486.1

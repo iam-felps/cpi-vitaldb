@@ -1,0 +1,4 @@
+Horizon,Windows,Cases,Positive windows,ICC,Design effect,Effective windows,Effective positives,Effective positives per feature (A / B),AUROC design effect (A / B)
+5 min,"498,941",2671,"8,603",0.016,4.7,"106,784","1,841",80 / 97,4.5 / 4.0
+10 min,"497,959",2671,"17,243",0.033,8.7,"57,291","1,984",86 / 104,8.0 / 5.8
+15 min,"493,316",2671,"23,514",0.048,12.2,"40,365","1,924",84 / 101,10.5 / 9.0

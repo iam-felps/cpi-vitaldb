@@ -60,4 +60,4 @@ for tr in CHECK_TRACKS:
 
 d = df.dropna(subset=['BIS_offset_s', 'SQI_offset_s'])
 print(f"\nBIS vs SQI start mismatch > 1s: {((d['BIS_offset_s'] - d['SQI_offset_s']).abs() > 1).sum()} cases")
-print("\nSaved per-case offsets to results/diag_track_alignment_offsets.csv")
+print("\nSaved per-case offsets to results/diag_track_alignment_offsets.csv")& ".venv\Scripts\python.exe" "src\check_filter_overlap.py"

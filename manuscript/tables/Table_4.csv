@@ -1,0 +1,23 @@
+Analysis,5 min,10 min,15 min
+"Model A, pooled",0.866,0.835,0.798
+"Model B, pooled",0.770,0.750,0.732
+"Baseline, pooled",0.641,0.588,0.561
+"Model A, within phase (early / mid / late)",0.737 / 0.676 / 0.759,0.691 / 0.631 / 0.698,0.647 / 0.571 / 0.632
+"Model B, within phase (early / mid / late)",0.630 / 0.517 / 0.622,0.583 / 0.488 / 0.549,0.532 / 0.428 / 0.504
+"Baseline, within phase (early / mid / late)",0.417 / 0.524 / 0.662,0.423 / 0.529 / 0.602,0.444 / 0.528 / 0.565
+"Model A, events anticipated (early / mid / late)",36% / 44% / 91%,34% / 53% / 92%,25% / 58% / 91%
+Anesthesia period: elapsed time only,0.669,0.675,0.676
+Anesthesia period: elapsed time + drug features,0.842,0.810,0.772
+"Anesthesia period: Model A − (elapsed time + drug features), ΔAUROC (95% CI)",+0.024 (+0.019 to +0.029),+0.025 (+0.019 to +0.030),+0.027 (+0.022 to +0.032)
+"Anesthesia period: Model B − elapsed time only, ΔAUROC (95% CI)",+0.101 (+0.092 to +0.110),+0.075 (+0.068 to +0.082),+0.056 (+0.050 to +0.062)
+Surgery period: elapsed time only,0.641,0.636,0.630
+Surgery period: elapsed time + drug features,0.786,0.730,0.681
+Surgery period: Model A,0.798,0.733,0.698
+Surgery period: Model B,0.714,0.679,0.664
+"Surgery period: Model A − (elapsed time + drug features), ΔAUROC (95% CI)",+0.011 (0.000 to +0.022),+0.003 (-0.012 to +0.017),+0.017 (+0.001 to +0.036)
+"Surgery period: Model B − elapsed time only, ΔAUROC (95% CI)",+0.073 (+0.057 to +0.089),+0.043 (+0.027 to +0.059),+0.034 (+0.017 to +0.050)
+Model A without drug features,0.767,0.747,0.732
+"Model A − Model A without drug features, ΔAUROC (95% CI)",+0.099 (+0.091 to +0.107),+0.088 (+0.079 to +0.095),+0.066 (+0.059 to +0.073)
+"Model A without drug features − Model B, ΔAUROC (95% CI)",-0.004 (-0.007 to -0.001),-0.002 (-0.005 to 0.000),+0.001 (-0.002 to +0.003)
+"Model A − Model A without elapsed time, ΔAUROC (95% CI)",+0.017 (+0.013 to +0.021),+0.031 (+0.026 to +0.036),+0.041 (+0.035 to +0.048)
+"Model B − Model B without elapsed time, ΔAUROC (95% CI)",+0.047 (+0.041 to +0.055),+0.065 (+0.057 to +0.073),+0.066 (+0.058 to +0.075)

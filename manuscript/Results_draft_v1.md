@@ -86,7 +86,7 @@ Discrimination was consistently lower in ASA III patients and in the youngest pa
 - **Elapsed time plus drug features** (the anesthetic course) reached 0.842, 0.810 and 0.772.
 - **Model A exceeded the anesthetic-course model** by +0.024 (0.019–0.029), +0.025 (0.019–0.030) and +0.027 (0.022–0.032) (all p < 0.001).
 - **Model B exceeded elapsed time alone** by +0.101 (0.092–0.110), +0.075 (0.068–0.082) and +0.056 (0.050–0.062) (all p < 0.001).
-- **Removing elapsed time** reduced AUROC by 0.017 (0.013–0.021), 0.031 (0.026–0.036) and 0.041 (0.035–0.048) for Model A, and by 0.048 (0.041–0.055), 0.065 (0.057–0.073) and 0.066 (0.058–0.075) for Model B (all p < 0.001), to 0.849, 0.804 and 0.757 (A) and 0.723, 0.684 and 0.666 (B) [63].
+- **Removing elapsed time** reduced AUROC by 0.017 (0.013–0.021), 0.031 (0.026–0.036) and 0.041 (0.035–0.048) for Model A, and by 0.047 (0.041–0.055), 0.065 (0.057–0.073) and 0.066 (0.058–0.075) for Model B (all p < 0.001), to 0.849, 0.804 and 0.757 (A) and 0.723, 0.684 and 0.666 (B) [63].
 
 **Surgery period** [50]:
 - Restricting windows and events to the surgical period left 3,217, 5,067 and 6,220 positive labelled windows (0.74%, 1.20% and 1.51%; before the completeness rule), 24–32% of the anesthesia-period count on the same basis (9,967, 19,444 and 26,157) [46, 50].
@@ -182,7 +182,7 @@ A prediction is due every 60 seconds.
 | Model A, pooled | 0.866 | 0.835 | 0.798 |
 | Model A, within phase (early / mid / late) | 0.737 / 0.676 / 0.759 | 0.691 / 0.631 / 0.698 | 0.647 / 0.571 / 0.632 |
 | Model B, within phase (early / mid / late) | 0.630 / 0.517 / 0.622 | 0.583 / 0.488 / 0.549 | 0.532 / 0.428 / 0.504 |
-| Model A, events anticipated (early / mid / late) | 36% / 44% / 91% | 34% / 53% / 93% | 25% / 59% / 91% |
+| Model A, events anticipated (early / mid / late) | 36% / 44% / 91% | 34% / 53% / 92% | 25% / 58% / 91% |
 | Elapsed time only | 0.669 | 0.675 | 0.676 |
 | Elapsed time + drug features | 0.842 | 0.810 | 0.772 |
 | Model A without drug features | 0.767 | 0.747 | 0.732 |
